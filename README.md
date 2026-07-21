@@ -72,6 +72,35 @@ LangSmith tracing is enabled through environment variables, making it easier to 
 ### Clean UI
 The frontend is intentionally minimal and focuses on the generated itinerary as the primary result, with additional details available on demand.
 
+## System Architecture
+
+The application follows a simple request-response pipeline with a multi-agent backend:
+
+```mermaid
+flowchart LR
+  U[User] --> UI[FastAPI + Jinja2 Web UI]
+  UI --> API[POST /plan]
+  API --> LG[LangGraph Workflow]
+  LG --> F[Flight Agent]
+  LG --> H[Hotel Agent]
+  LG --> I[Itinerary Agent]
+  LG --> R[Final Response Agent]
+  F --> P[(PostgreSQL Checkpointer)]
+  H --> P
+  I --> P
+  R --> P
+  LG --> UI
+  UI --> U
+```
+
+### How it works
+
+- The user submits a trip prompt through the web form.
+- FastAPI receives the request and forwards the query to `run_travel_plan_agent()`.
+- LangGraph coordinates the flight, hotel, itinerary, and final response stages.
+- PostgreSQL stores the graph state using a thread ID, allowing the workflow to remain traceable and resumable.
+- The final result is rendered back into the UI for review.
+
 ## Getting Started
 
 ### Prerequisites
