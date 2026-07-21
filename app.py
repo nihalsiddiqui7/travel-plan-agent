@@ -73,3 +73,6 @@ async def plan_trip(
         )
 
 
+@app.get("/health", response_class=JSONResponse)
+async def health_check():
+        return JSONResponse(content={"status": "ok"})
