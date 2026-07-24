@@ -34,7 +34,7 @@ async def home(request: Request):
 
 
 @app.post("/plan", response_class=HTMLResponse)
-async def plan_trip(
+def plan_trip(
         request: Request,
         origin: str = Form(""),
         destination: str = Form(""),

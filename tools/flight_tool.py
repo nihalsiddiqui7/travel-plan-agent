@@ -1,4 +1,5 @@
 import os
+from xmlrpc import client
 from dotenv import load_dotenv
 import re
 import certifi
@@ -445,6 +446,8 @@ Arrival:
 - Delay: {arr_delay_text}
 """.strip()
 
+import httpx
+import asyncio
 
 def search_flights(query: str, limit: int = 10):
     if not AVIATION_API_KEY:
@@ -468,9 +471,9 @@ def search_flights(query: str, limit: int = 10):
         params["arr_iata"] = arr_iata
 
     try:
-        response = requests.get(BASE_URL, params=params, timeout=30)
+        response = requests.get(BASE_URL, params=params)
         data = response.json()
-    except requests.exceptions.RequestException as e:
+    except httpx.HTTPError as e:
         return f"Flight API request failed: {e}"
     except ValueError:
         return "Flight API returned invalid JSON."

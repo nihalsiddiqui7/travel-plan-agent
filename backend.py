@@ -51,7 +51,7 @@ if not OPENAI_API_KEY:
 llm = ChatOpenAI(
     model="gpt-4o-mini",
     api_key=OPENAI_API_KEY,
-    temperature=0.4,
+    temperature=0.2,
 )
 
 #===========================================================================
@@ -172,8 +172,7 @@ def final_response_agent(state: TravelPlanState):
 
     final_response_prompt = f"""
     You are a travel assistant. Based on the user's query and the generated itinerary, compile a final response to the user.
-    Make it concise, informative, and engaging. Include any additional recommendations or tips based on the user's query.
-    Also add budget for everything in the itinerary. Format the response in the following way:
+    Make it concise, informative, and engaging.Format the response in the following way:
     Format the response in the following way:
     1:Travel Plan Summary
     2:Flight Details
@@ -189,7 +188,7 @@ def final_response_agent(state: TravelPlanState):
     Please compile a final response to the user based on the above information.
     """
 
-    response = llm.invoke([
+    response = llm.ainvoke([
         SystemMessage(content="You are a helpful travel assistant."),
         HumanMessage(content=final_response_prompt)
     ])
@@ -205,14 +204,14 @@ graph = StateGraph(TravelPlanState)
 graph.add_node("flight_agent", flight_agent)
 graph.add_node("hotel_agent", hotel_agent)
 graph.add_node("itinerary_agent", itinerary_agent)
-graph.add_node("final_response_agent", final_response_agent)
+# graph.add_node("final_response_agent", final_response_agent)
 
 #Edges
 graph.add_edge(START, "flight_agent")
 graph.add_edge("flight_agent", "hotel_agent")
 graph.add_edge("hotel_agent", "itinerary_agent")
-graph.add_edge("itinerary_agent", "final_response_agent")
-graph.add_edge("final_response_agent", END)
+graph.add_edge("itinerary_agent", END)
+# graph.add_edge("final_response_agent", END)
 
 #=============================================
 
@@ -249,7 +248,7 @@ def run_travel_plan_agent(user_query: str,thread_id: str | None = None):
             "thread_id": thread_id
         }
     }
-    result = travelgraph.invoke(
+    result =travelgraph.invoke(
         {
             "messages":[HumanMessage(content=user_query)],
             "user_query": user_query,
