@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from backend import run_travel_plan_agent
+
 
 
 BASE_DIR =Path(__file__).resolve().parent
